@@ -1,0 +1,127 @@
+﻿@model Lokanta.Models.ViewModels.IndexViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br>
+
+<br>
+<div class="whiteBackground container">
+
+    <ul id="menu-filter" class="menu-filter-list list-inline text-center">
+        <li class="active btn btn-secondary ml-1 mr-1 " data-filter=".AllCategories">Show All</li>
+        @foreach (var category in Model.Categories)
+        {<!--داتا فلتر مشان لما اكبس على فئة بطالعلي هية ةو بيخفي الباقي-->
+            <li class=" btn btn-secondary ml-1 mr-1" data-filter="@category.Name.Replace(" ",string.Empty)"> @category.Name</li>
+        }
+    </ul>
+
+
+    @foreach (var category in Model.Categories)
+    {
+        var menuItems = Model.MenuItems.Where(m => m.Category.Name.Equals(category.Name));
+        <div class="row">
+            @if (menuItems.Count() > 0)
+            {
+                <div class="col-12 @category.Name.Replace(" ",string.Empty) AllCategories">
+                    <div class="row">
+                        <h3 class="text-success">
+                            @category.Name
+                        </h3>
+                    </div>
+                    @foreach (var item in menuItems)
+                    {
+                        <div class="border border-info rounded col-12" style="margin-top:10px;margin-bottom:10px;padding:10px">
+                            <div class="row">
+                                <div class="col-md-3 col-sm-12">
+
+                                </div>
+
+
+                                <div class="col-md-9 col-sm-12">
+                                    <div class="row pr-3">
+                                        <div class="col-8">
+                                            <label class="text-primary" style="font-size:21px;">
+                                                @item.Name
+                                            </label>
+                                            @if (item.Spicyness == "1")
+                                            {
+                                                <label class="text-success" style="font-size:12px;">
+                                                    (A little hot)
+                                                </label>
+                                            }
+                                            @if (item.Spicyness == "2")
+                                            {
+                                                <label class="text-danger" style="font-size:12px;">
+                                                    ( hot)
+                                                </label>
+                                            }
+                                            @if (item.Spicyness == "3")
+                                            {
+                                                <label class="text-dark" style="font-size:12px;">
+                                                    (Very hot)
+                                                </label>
+                                            }
+                                        </div>
+
+
+                                        <div class="col-4 text-right" style="color:maroon">
+                                            <h4>
+                                                $   @item.Price
+                                            </h4>
+                                        </div>
+
+
+                                    </div>
+
+
+                                    <div class="row col-12 text-justify d-none d-md-block">
+                                        <p>
+                                            @item.Discription
+                                        </p>
+                                    </div>
+
+
+                                    <div class="col-md-3 col-sm-12 offset-md-9 text-right">
+                                        <a asp-action="Details" class="btn btn-success form-control" asp-route-itemid="@item.Id">Details</a>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="p-4"> <!--مشان تعطي مسافة بين كل فئة--></div>
+    }
+</div>
+
+
+
+
+@section Scripts{
+
+    <!-- مشان لما اكبس على فئة بطالعلي هية ةو بيخفي الباقي -->
+    <script>
+        $(document).ready(
+            function ($) {
+                $("#menu-filter li").click(
+                    function () {
+                        $("#menu-filter li").removeClass("active btn btn-secondary");
+                        $(this).addClass("active btn btn-secondary");
+                        var selectedFilter = $(this).data("filter");
+                        $(".AllCategories").fadeOut();
+                        setTimeout(function () {
+                            $(selectedFilter).slideDown();
+
+                        }, 300);
+
+                    }
+                )
+            }
+        );
+    </script>
+}

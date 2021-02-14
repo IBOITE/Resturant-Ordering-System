@@ -1,0 +1,81 @@
+﻿@model Coupon
+@{
+    ViewData["Title"] = "Create";
+}
+
+<br>
+<h2 class="text-info">Create Coupon</h2>
+<br>
+<form asp-action="Create" method="post">
+    <div class="whiteBackground border">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="Name" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="Name" class="form-control" />
+                <span class="text-danger" asp-validation-for="Name"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="CouponType" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <select class="form-control" asp-for="CouponType" asp-items="@Html.GetEnumSelectList<Coupon.ECouponType>()"></select>
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="Discount" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="Discount" class="form-control" />
+                <span class="text-danger" asp-validation-for="Discount"></span>
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MinimunAmount" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="MinimunAmount" class="form-control" />
+                <span class="text-danger" asp-validation-for="MinimunAmount"></span>
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="ISAction" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="ISAction" type="checkbox" class="form-control" />
+            </div>
+        </div>
+
+
+
+
+        <div class="form-group row">
+            <div class="col-5 offset-2">
+                <partial name="_CreateAndBackToListButtonsPatrial">
+            </div>
+        </div>
+    </div>
+</form>
+<!--مشان لما اكبس زر الكريت بدون ما اكتب شي ما تعمل الصفحة تحديث دغري بيعطي الغلط-->
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

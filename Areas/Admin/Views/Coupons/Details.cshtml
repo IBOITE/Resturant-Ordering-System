@@ -1,0 +1,79 @@
+﻿@model Coupon
+@{
+    ViewData["Title"] = "Create";
+}
+
+<br>
+<h2 class="text-info"> Coupon Details</h2>
+<br>
+
+    <div class="whiteBackground border">
+        <input type="hidden" asp-for="Id">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="Name" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="Name" class="form-control" readonly />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="CouponType" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <select class="form-control" disabled asp-for="CouponType" asp-items="@Html.GetEnumSelectList<Coupon.ECouponType>()"></select>
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="Discount" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="Discount" readonly class="form-control" />
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MinimunAmount" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="MinimunAmount" readonly class="form-control" />
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="ISAction" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="ISAction" disabled type="checkbox" class="form-control" />
+            </div>
+        </div>
+
+
+
+
+        <div class="form-group row">
+            <div class="col-5 offset-2">
+                <partial name="_EditAndBackToListButtonsPatrial" model="Model.Id">
+            </div>
+        </div>
+    </div>
+
+<!--مشان لما اكبس زر الكريت بدون ما اكتب شي ما تعمل الصفحة تحديث دغري بيعطي الغلط-->
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

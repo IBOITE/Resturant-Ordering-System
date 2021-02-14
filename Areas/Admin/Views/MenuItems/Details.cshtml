@@ -1,0 +1,89 @@
+﻿@model Lokanta.Models.ViewModels.MenuItemViewModel
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br>
+<h2 class="text-info"> Menu Item Details</h2>
+<br>
+
+    <input type="hidden" asp-for="MenuItem.Id" />
+    <div class="whiteBackground border">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Name" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="MenuItem.Name" class="form-control"  readonly/>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Discription" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <textarea asp-for="MenuItem.Discription" class="form-control" readonly></textarea>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Price" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="MenuItem.Price" class="form-control"  readonly/>
+            </div>
+        </div>
+
+        
+
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <select id="ddlCategories" asp-for="MenuItem.CategoryId" disabled asp-items="@(new SelectList(Model.CategoriesList,"Id","Name"))" class="form-control"></select>
+
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <select id="ddlSubCategories" asp-for="MenuItem.SubCategoryId" disabled asp-items="@(new SelectList(Model.SubCategoriesList,"Id","Name"))" class="form-control"></select>
+
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Spicyness" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <select asp-for="MenuItem.Spicyness" disabled asp-items="@Html.GetEnumSelectList<MenuItem.ESpicy>()" class="form-control"></select>
+                
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-5 offset-2">
+                <partial name="_EditAndBackToListButtonsPatrial" model="@Model.MenuItem.Id">
+            </div>
+        </div>
+    </div>
+
+<!--مشان لما اكبس زر الكريت بدون ما اكتب شي ما تعمل الصفحة تحديث دغري بيعطي الغلط-->
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+
+}
+
+
