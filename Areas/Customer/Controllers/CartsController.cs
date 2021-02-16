@@ -62,6 +62,48 @@ namespace Lokanta.Areas.Customer.Controllers
             return View(OrderDetailsCartVM);
         }
 
+        public IActionResult Summary()
+        {
+            OrderDetailsCartVM = new OrderDetailsCartViewModel()
+            {
+                OrderHeader = new Models.OrderHeader()
+            };
+
+            OrderDetailsCartVM.OrderHeader.OrderTotal = 0;
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            var appUser = db.ApplicationUsers.Find(claim.Value);
+
+            OrderDetailsCartVM.OrderHeader.PickUpName = appUser.Name;
+            OrderDetailsCartVM.OrderHeader.PhoneNumber = appUser.PhoneNumber;
+            OrderDetailsCartVM.OrderHeader.PickUpTime = DateTime.Now ;
+
+            var shoppingCarts = db.shoppingCarts.Where(m => m.ApplicationUserId == claim.Value);
+
+            if (shoppingCarts != null)
+            {
+                OrderDetailsCartVM.ShoppingCartsList = shoppingCarts.ToList();
+            }
+
+            foreach (var item in OrderDetailsCartVM.ShoppingCartsList)
+            {
+                item.MenuItem = db.MenuItems.FirstOrDefault(m => m.Id == item.MenuItemId);
+                OrderDetailsCartVM.OrderHeader.OrderTotal += item.MenuItem.Price * item.Count;
+            }
+
+            OrderDetailsCartVM.OrderHeader.OrderTotalOrginal = OrderDetailsCartVM.OrderHeader.OrderTotal;
+            if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
+            {
+                OrderDetailsCartVM.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
+                var couponFromDb = db.Coupons.Where(m => m.Name.ToLower() == OrderDetailsCartVM.OrderHeader.CouponCode.ToLower()).FirstOrDefault();
+                OrderDetailsCartVM.OrderHeader.OrderTotal = SD.DiscountPrice(couponFromDb, OrderDetailsCartVM.OrderHeader.OrderTotalOrginal);
+            }
+
+            return View(OrderDetailsCartVM);
+        }
+
 
         public IActionResult ApplyCoupon()
         {
