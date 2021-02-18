@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,7 +112,7 @@ namespace Lokanta.Areas.Customer.Controllers
         [ValidateAntiForgeryToken]
         //bu action adi degistirdigimdan bu sey kullandim (httpget ve http post ayni isimler olmak lazim ayni degilse  bu [ActionName(".....")] kullaniyoruz)
         [ActionName("Summary")]
-        public async Task<IActionResult> SummaryPost()
+        public async Task<IActionResult> SummaryPost(string stripeToken)
         {
 
 
@@ -172,6 +173,39 @@ namespace Lokanta.Areas.Customer.Controllers
             db.shoppingCarts.RemoveRange(OrderDetailsCartVM.ShoppingCartsList);
             HttpContext.Session.SetInt32(SD.ShoppingCartCount, 0);
             await db.SaveChangesAsync();
+
+
+
+            //online odeme icin
+            var options = new Stripe.ChargeCreateOptions
+            {
+                Amount = Convert.ToInt32(OrderDetailsCartVM.OrderHeader.OrderTotal * 100),
+                Currency="usd",
+                Description="Order ID : "+OrderDetailsCartVM.OrderHeader.Id,
+                Source= stripeToken
+            };
+            var service = new ChargeService();
+            Charge charge = service.Create(options);
+            if(charge.BalanceTransactionId==null)
+            {
+                OrderDetailsCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
+
+            }
+            else
+            {
+                OrderDetailsCartVM.OrderHeader.TrasactionId = charge.BalanceTransactionId;
+            }
+            if(charge.Status.ToLower()=="succeeded")
+            {
+                OrderDetailsCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
+                OrderDetailsCartVM.OrderHeader.Status = SD.StatusSubmitted;
+            }
+            else
+            {
+                OrderDetailsCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
+            }
+            await db.SaveChangesAsync();
+
 
             return RedirectToAction("Index", "Home");
         }

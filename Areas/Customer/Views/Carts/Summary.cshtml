@@ -1,4 +1,10 @@
 ﻿@model OrderDetailsCartViewModel
+
+@*online odeme icin*@
+@using Microsoft.Extensions.Options
+@inject IOptions<Lokanta.Utility.StripesSettings> Stripe
+
+
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -158,6 +164,23 @@
 
                     <div class="card-footer">
                         <div class="col-12 col-lg-4 offset-lg-8 col-md-6 offset-md-6">
+
+                            @*online odeme icin*@
+                            @{ var OrderTotalForStripe = Model.OrderHeader.OrderTotal * 100;} @*bu para icin ve 100 carptik cunku bu kurus kullaniyor T.L degil*@
+                            <script src="https://checkout.stripe.com/checkout.js" class="stripe-button" 
+                                    data-key="@Stripe.Value.PublishableKey" 
+                                    data-amount="@OrderTotalForStripe" 
+                                    data-name="Place Order" 
+                                    data-description="Good Food , Good Mood" 
+                                    data-locale="auto" 
+                                    data-allow-remember-me="false"
+                                    data-image="https://Stripe.com/img/documentation/checkout/marketplace.png">
+                            </script>
+
+                            <script>
+                                document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
+                            </script>
+                            
                             <button type="submit" class="btn btn-success form-control" onclick="return validateInput()">Place Order</button>
                         </div>
                     </div>

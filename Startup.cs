@@ -1,5 +1,6 @@
 ﻿using Lokanta.Data;
 using Lokanta.Services;
+using Lokanta.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +65,11 @@ namespace Lokanta
                     options.Cookie.HttpOnly = true;
                 }
                 );
+
+            //bu online odeme icin 
+            services.Configure<StripesSettings>(Configuration.GetSection("Stripe"));
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,6 +90,8 @@ namespace Lokanta
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["SecretKey"];
 
             app.UseAuthentication();
             app.UseAuthorization();

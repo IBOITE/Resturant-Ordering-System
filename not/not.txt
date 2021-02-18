@@ -7,4 +7,13 @@
 
 
 
-----
+----online odeme 
+     //birinci stripe sitenden account yapiyorym sonra (appsettings )'de keyler ekliyorym sonra  (utility)'de class olusturdum
+    //porplar yaptim sonra (tools->Nuget Package Manager->manage Nuget...)'den(Stripe.net) indirdim
+    // (startup)'de bu servese register yapiyorum
+    //sonra view'da ( @using Microsoft.Extensions.Options ve @inject IOptions<Yaptigim class adi> Stripe) ekledim 
+    //sonra view'da (Place order buttonunda) bazi scriptler eklidim 
+    //sonra summary post actionide bazi seyler ekledim
+    //kart numaralari (stripe.com/docs/testing)'den getiriyorum
+
+-----
