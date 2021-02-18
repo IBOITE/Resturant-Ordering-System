@@ -1,9 +1,11 @@
 ﻿using Lokanta.Data;
+using Lokanta.Models;
 using Lokanta.Models.ViewModels;
 using Lokanta.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,6 +104,76 @@ namespace Lokanta.Areas.Customer.Controllers
             }
 
             return View(OrderDetailsCartVM);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        //bu action adi degistirdigimdan bu sey kullandim (httpget ve http post ayni isimler olmak lazim ayni degilse  bu [ActionName(".....")] kullaniyoruz)
+        [ActionName("Summary")]
+        public async Task<IActionResult> SummaryPost()
+        {
+
+
+
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+
+
+
+            OrderDetailsCartVM.ShoppingCartsList = await db.shoppingCarts.Where(m => m.ApplicationUserId == claim.Value).ToListAsync();
+
+            OrderDetailsCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+            OrderDetailsCartVM.OrderHeader.OrderDate = DateTime.Now;
+            OrderDetailsCartVM.OrderHeader.UserId = claim.Value;
+            OrderDetailsCartVM.OrderHeader.Status = SD.PaymentStatusPending;
+            OrderDetailsCartVM.OrderHeader.PickUpTime = Convert.ToDateTime(OrderDetailsCartVM.OrderHeader.PickUpDate.ToShortDateString() + " " +
+                OrderDetailsCartVM.OrderHeader.PickUpTime.ToShortTimeString());
+            OrderDetailsCartVM.OrderHeader.OrderTotalOrginal = 0;
+
+            db.OrderHeaders.Add(OrderDetailsCartVM.OrderHeader);
+            await db.SaveChangesAsync();
+
+
+            foreach (var item in OrderDetailsCartVM.ShoppingCartsList)
+            {
+                item.MenuItem = db.MenuItems.FirstOrDefault(m => m.Id == item.MenuItemId);
+
+                OrderDetail orderDetail = new OrderDetail()
+                {
+                    MenuItemId = item.MenuItemId,
+                    OrderId = OrderDetailsCartVM.OrderHeader.Id,
+                    Description = item.MenuItem.Discription,
+                    Name = item.MenuItem.Name,
+                    Price = item.MenuItem.Price,
+                    Count = item.Count
+                };
+
+                OrderDetailsCartVM.OrderHeader.OrderTotal += item.MenuItem.Price * item.Count;
+                db.OrderDetails.Add(orderDetail);
+            }
+
+
+            if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
+            {
+                OrderDetailsCartVM.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
+                var couponFromDb = db.Coupons.Where(m => m.Name.ToLower() == OrderDetailsCartVM.OrderHeader.CouponCode.ToLower()).FirstOrDefault();
+                OrderDetailsCartVM.OrderHeader.OrderTotal = SD.DiscountPrice(couponFromDb, OrderDetailsCartVM.OrderHeader.OrderTotalOrginal);
+            }
+            else
+            {
+                OrderDetailsCartVM.OrderHeader.OrderTotal = OrderDetailsCartVM.OrderHeader.OrderTotalOrginal;
+            }
+
+            OrderDetailsCartVM.OrderHeader.CouponCodeDiscount = OrderDetailsCartVM.OrderHeader.OrderTotalOrginal - OrderDetailsCartVM.OrderHeader.OrderTotal;
+
+            db.shoppingCarts.RemoveRange(OrderDetailsCartVM.ShoppingCartsList);
+            HttpContext.Session.SetInt32(SD.ShoppingCartCount, 0);
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
         }
 
 

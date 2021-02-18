@@ -1,3 +1,10 @@
 [Authorize]مشان لما اضغط على زر  بتاخدني لشاشة الدخول
 تستخدم فوق actıon
-        
+       
+       
+
+---(httpget ve http post ayni isimler olmak lazim ayni degilse  bu [ActionName(".....")] kullaniyoruz)
+
+
+
+----

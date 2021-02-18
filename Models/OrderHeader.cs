@@ -37,7 +37,7 @@ namespace Lokanta.Models
 
         [Display(Name = "Coupon Code")]
         public String CouponCode { get; set; }
-        public String CouponCodeDiscount { get; set; }
+        public double CouponCodeDiscount { get; set; }
         public string Status { get; set; }
         public string PaymentStatus { get; set; }
         public String Comments { get; set; }

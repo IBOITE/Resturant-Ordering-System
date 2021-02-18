@@ -13,6 +13,17 @@ namespace Lokanta.Utility
         public const string ShoppingCartCount = "ShoppingCartCount";
         public const string ssCouponCode = "CouponCode";
 
+        public const string StatusSubmitted= "Submitted";
+        public const string StatusInProcess = "Begin Prepared";
+        public const string StatusReady= "Ready for Pickup";
+        public const string StatusCompleted= "Completed";
+        public const string StatusCancelled= "Cancelled";
+
+        public const string PaymentStatusPending= "Pending";
+        public const string PaymentStatusApproved= "Approved";
+        public const string PaymentStatusRejected = "Rejected";
+
+
         public static double DiscountPrice(Coupon coupon,double OrderTotalOrginal)
         {
             if(coupon==null)
